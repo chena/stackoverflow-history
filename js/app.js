@@ -7,7 +7,6 @@ app.constant('StackExchangeConst', {
 });
 
 app.factory('StackExchangeService', function($http, StackExchangeConst) {
-	
 	var getRequestURL = function(qid) {
 		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
 	}
@@ -27,7 +26,7 @@ app.factory('StackExchangeService', function($http, StackExchangeConst) {
 });
 
 app.factory('HistoryService', function(StackExchangeService) {
-	function isNotEmpty(str) {
+	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	}
 
@@ -77,6 +76,7 @@ app.controller('PageController', function($scope, HistoryService) {
 		// wrap in apply so angular knows when to bind our data
 		$scope.$apply(function() {
 			$scope.questions = questions;
+			// TODO: get all tags 
 		});
 	});
 });

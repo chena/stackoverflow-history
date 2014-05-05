@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html data-ng-app="StackoverflowHistory" data-ng-csp="">
+<html ng-app="StackoverflowHistory" ng-csp="">
   <head>
     <title>Stackoverflow History</title>
     <link rel="stylesheet" media="all" href="chrome-bootstrap.css">
     <base target="_blank"><!-- open all links in new tabs-->
   </head>
 
-  <body data-ng-controller="PageController">
+  <body ng-controller="PageController">
   	<div class="chrome-bootstrap">
   		<h2>Visisted Pages on Stackoverflow</h2>
-    	<div class="well" data-ng-repeat="question in questions">
-        <h3><a data-ng-href="{{question.url}}">{{question.title}}</a></h3>
-        <button data-ng-repeat="tag in question.tags">
+    	<div class="well" ng-repeat="question in questions">
+        <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
+        <button ng-repeat="tag in question.tags">
           {{tag}}
         </button>
       </div>
@@ -21,4 +21,3 @@
     <script src='js/app.js'></script>
   </body>
 </html>
-
