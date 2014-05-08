@@ -1,6 +1,6 @@
 # Stackoverflow History
 
-Chrome extension that uses Chomre History and Stack Exchange APIs to show and analyze visisted questions on Stackoverflow. 
+Chrome extension that uses Chomre History and Stack Exchange APIs to show and analyze visisted questions on Stackoverflow, using AngularJS.
 
 
 ## Usage
