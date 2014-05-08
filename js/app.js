@@ -1,11 +1,5 @@
 var app = angular.module('StackoverflowHistory', []);
 
-// StackExchange API base URL
-app.constant('StackExchangeConst', {
-	baseURL: 'http://api.stackexchange.com/2.2/questions/',
-	key: '57GIfzOADMe0nXAda1LCmw(('
-});
-
 app.factory('StackExchangeService', function($http, StackExchangeConst) {
 	var getRequestURL = function(qid) {
 		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
