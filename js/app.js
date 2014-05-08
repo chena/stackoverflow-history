@@ -36,14 +36,21 @@ app.factory('HistoryService', function(StackExchangeService) {
 			var start = (new Date).getTime() - microseconds;
 			var questions = {}; // object the hold question URLs and their tags
 
-			// TODO: sort history items
+			// TODO: ng-click tags then categorize
+			// TODO: autocomplete search
+			// TODO: clear search
+			// TODO: topic cloud with D3
+			// TODO: tabs?
 			chrome.history.search({
 				'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
 				'startTime' : start,
-				'maxResults' : 5
+				'maxResults' : 10
 			}, function(historyItems) {
 				historyItems.forEach(function(item, i) {
-					var url = item.url, title = item.title;
+					var url = item.url, 
+						title = item.title,
+						time = item.lastVisitTime;
+
 					var match = url.match(/\/questions\/(\d+)\//i); // extract the questionID
 					
 					// only map unique questions that have a title and an URL
@@ -54,14 +61,16 @@ app.factory('HistoryService', function(StackExchangeService) {
 								questions[qid] = {
 									title : title,
 									url : url,
-									tags : tags
+									tags : tags, 
+									time: time
 								}
 							});
-
-							if (i == historyItems.length - 1) {
-								callback(questions);
-							}
 						}
+					}
+
+					// ready to execute callback
+					if (i == historyItems.length - 1) {
+						callback(questions);
 					}
 				});
 			});
@@ -73,10 +82,33 @@ app.factory('HistoryService', function(StackExchangeService) {
 
 app.controller('PageController', function($scope, HistoryService) {
 	HistoryService.search(function(questions) {
-		// wrap in apply so angular knows when to bind our data
+		$scope.toArray = function(map) {
+			var array = [];
+			for (var key in map) {
+				array.push(map[key]);
+			}
+			return array;
+		}
+
+		$scope.search = function(tag) {
+			$scope.keyword = tag;
+		}
+
+		// wrap in apply so angular knows when to bind our data when they become available
 		$scope.$apply(function() {
 			$scope.questions = questions;
 			// TODO: get all tags 
 		});
 	});
 });
+
+// word cloud directive
+/*
+app.directive('wordcloud', function() {
+	return {
+		restrict: 'EA', // restrict to element or attribute
+		scope: {
+			words: '='
+		}, 
+	};
+});*/
