@@ -2,19 +2,51 @@
 <html ng-app="StackoverflowHistory" ng-csp="">
   <head>
     <title>Stackoverflow History</title>
-    <link rel="stylesheet" media="all" href="chrome-bootstrap.css">
+    <link rel="stylesheet" media="all" href="css/chrome-bootstrap.css">
+    <link rel="stylesheet" media="all" href="css/styles.css">
     <base target="_blank"><!-- open all links in new tabs-->
   </head>
 
   <body ng-controller="PageController">
   	<div class="chrome-bootstrap">
-  		<h2>Visisted Pages on Stackoverflow</h2>
-    	<div class="well" ng-repeat="question in questions">
-        <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
-        <button ng-repeat="tag in question.tags">
-          {{tag}}
-        </button>
-      </div>
+  		<span class="heading">stack<strong>overflow</strong> history</span>
+      
+      <p style="margin-left: 350px; position:">
+        Search by Tag or Keyword: <input type="text" ng-model="keyword">
+        
+        <!--<input type="hidden" ng-model="tag">-->
+      </p>
+
+      <ul class="menu">
+        <li class="well" ng-repeat="question in toArray(questions) | orderBy:'time':true | filter:keyword">
+          <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
+          <p class="date">Last Visit: {{question.time | date : 'medium'}}</p>
+          <p>Tags: 
+            <button ng-repeat="tag in question.tags" ng-click="search(tag)">
+              {{tag}}
+            </button>
+          </p>
+        </li>
+      </ul>
+      <!--
+      <table class="table" ng-init="predicate='question.time'">
+        <thead>
+          <tr>
+            <th><a href="" ng-click="predicate='question.title'; reverse=!reverse">Question</a></th>
+            <th><a href="" ng-click="predicate='question.time'; reverse=!reverse">Last Visit</a></th>
+            <th><a href="" ng-click="predicate='question.tags'; reverse=!reverse">Tags</a></th>
+          </tr>
+        </thead>
+        <tr ng-repeat="question in questions | orderBy:predicate:reverse">
+          <td><a ng-href="{{question.url}}">{{question.title}}</a></td>
+          <td>{{question.time | date : 'medium'}}</td>
+          <td>
+            <ul class="tags">
+              <li ng-repeat="tag in question.tags"><button>{{tag}}</button></li>
+            </ul>
+          </td>
+        </tr>
+      </table>-->
   	</div>
 
     <script src="js/angular.min.js"></script>

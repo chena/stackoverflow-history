@@ -1,14 +1,62 @@
 .chrome-bootstrap {
   font-family: 'Chrome Droid Sans', 'Droid Sans Fallback', 'Lucida Grande', sans-serif;
   font-size: 12px;
+  color: #303942;
   cursor: default;
-  margin: 20px 10px;
+  margin: 0;
+  /* Headings
+  ============================================== */
+
+  /* Layout
+  ============================================== */
+
+  /* Header
+  ============================================== */
+
+  /* View sections
+  ============================================== */
+
+  /* Control bar
+  ============================================== */
+
+  /* Pagination
+  ============================================== */
+
+  /* Alert
+  ============================================== */
+
+  /* Tags
+  ============================================== */
+
+  /* Main menu
+  ============================================== */
+
+  /* Icons
+  ============================================== */
+
+  /* Highlightable list
+  ============================================== */
+
+  /* Input styling
+  ============================================== */
+
+  /* Focused --------------------------------- */
+
+  /* Disabled --------------------------------- */
+
+  /* Hovering --------------------------------- */
+
+  /* Active --------------------------------- */
+
+  /* Modal
+  ============================================== */
+
 }
 .chrome-bootstrap a {
   border: none;
   color: #15C;
   cursor: pointer;
-  text-decoration: none;
+  text-decoration: underline;
   font-weight: normal;
 }
 .chrome-bootstrap a:hover,
@@ -51,11 +99,11 @@
   -webkit-margin-before: 21px;
   -webkit-margin-start: 23px;
   height: 18px;
-  color: #5C6166;
   font-size: 18px;
 }
 .chrome-bootstrap h1 a {
   color: #5C6166;
+  text-decoration: none;
 }
 .chrome-bootstrap h3 {
   color: black;
@@ -80,7 +128,7 @@
   overflow-x: hidden;
 }
 .chrome-bootstrap .frame .content {
-  padding-top: 50px;
+  padding-top: 55px;
 }
 .chrome-bootstrap .frame .content p {
   text-align: justify;
@@ -112,7 +160,7 @@
 }
 .chrome-bootstrap header {
   position: fixed;
-  background: #FFF;
+  background-image: -webkit-linear-gradient(#ffffff, #ffffff 40%, rgba(255, 255, 255, 0.92));
   width: 738px;
   z-index: 2;
 }
@@ -175,11 +223,49 @@
   text-align: center;
   display: block;
   background: #F0F6FE;
+  text-decoration: none;
 }
 .chrome-bootstrap ol.pagination a:hover,
 .chrome-bootstrap ol.pagination a.selected {
   background: #8AAAED;
   color: #FFF;
+}
+.chrome-bootstrap .alert {
+  border-radius: 3px;
+  background: rgba(147, 184, 252, 0.2);
+  display: block;
+  position: relative;
+  padding: 10px 30px 10px 10px;
+  line-height: 17px;
+}
+.chrome-bootstrap .alert .delete {
+  top: 5px;
+  right: 6px;
+  opacity: 1;
+}
+.chrome-bootstrap ul.tags li {
+  background: #8AAAED;
+  color: #FFF;
+  border-radius: 3px;
+  position: relative;
+  display: inline-block;
+  padding: 2px 5px;
+}
+.chrome-bootstrap ul.tags li a {
+  color: #FFF;
+  text-decoration: none;
+}
+.chrome-bootstrap ul.tags li a:hover {
+  text-decoration: underline;
+}
+.chrome-bootstrap ul.tags li .delete {
+  opacity: 1;
+  position: relative;
+  display: inline-block;
+  width: 13px;
+  height: 12px;
+  top: 1px;
+  background-position-y: -1px;
 }
 .chrome-bootstrap ul.menu {
   -webkit-margin-before: 1em;
@@ -205,7 +291,6 @@
 }
 .chrome-bootstrap ul.menu li a {
   border: 0;
-  color: #999;
   cursor: pointer;
   font: inherit;
   line-height: 29px;
@@ -265,6 +350,7 @@
   display: block;
   position: relative;
   z-index: 0;
+  text-decoration: none;
 }
 .chrome-bootstrap .highlightable li dt {
   font-size: 105%;
@@ -275,7 +361,22 @@
   overflow: hidden;
   white-space: nowrap;
   font-size: 10px;
-  margin-top: 3px;
+  margin-top: 5px;
+}
+.chrome-bootstrap .highlightable li .tags {
+  float: left;
+  margin-top: -1px;
+  font-size: 12px;
+}
+.chrome-bootstrap .highlightable li .tags li:last-child {
+  margin-right: 5px;
+}
+.chrome-bootstrap .highlightable li .tags li:hover > a:not(.action) {
+  background: #8AAAED;
+  color: #FFF;
+}
+.chrome-bootstrap .highlightable li .tags li a {
+  padding: 0;
 }
 .chrome-bootstrap .highlightable li .action {
   -webkit-appearance: none;
@@ -434,6 +535,7 @@
   border-color: rgba(80, 80, 80, 0.2);
   box-shadow: 0 1px 0 rgba(80, 80, 80, 0.08), inset 0 1px 2px rgba(255, 255, 255, 0.75);
   color: #aaa;
+  cursor: default;
 }
 .chrome-bootstrap select:disabled {
   /* OVERRIDE */
@@ -539,20 +641,26 @@
 .chrome-bootstrap .overlay .page ul li {
   padding: 5px 0;
 }
+.chrome-bootstrap .overlay .page ul.tags li {
+  padding: 2px 5px;
+}
 .chrome-bootstrap .overlay .page .content-area {
   -webkit-box-flex: 1;
   overflow: auto;
   padding: 6px 17px 6px;
 }
 .chrome-bootstrap .overlay .page .close-button {
-  background-image: url('chrome://resources/images/x.png');
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAUklEQVR4XqXPYQrAIAhAYW/gXd8NJxTopVqsGEhtf+L9/ERU2k/HSMFQpKcYJeNFI9Be0LCMij8cYyjj5EHIivGBkwLfrbX3IF8PqumVmnDpEG+eDsKibPG2JwAAAABJRU5ErkJggg==');
   background-position: center;
   background-repeat: no-repeat;
-  height: 24px;
+  height: 14px;
   position: absolute;
-  right: 10px;
-  top: 10px;
-  width: 24px;
+  right: 7px;
+  top: 7px;
+  width: 14px;
+}
+.chrome-bootstrap .overlay .page .close-button:hover {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAOCAQAAAC1QeVaAAAAnUlEQVR4XoWQQQ6CQAxFewjkJkMCyXgJPMk7AiYczyBeZEAX6AKctGIaN+bt+trk9wtGQc/IkhnoKGxqqiWxOSZalapWFZ6VrIUDExsN0a5JRBq9LoVOR0eEQMoEhKizXhhsn0p1sCWVo7CwOf1RytPL8CPvwuBUoHL6ugeK30CVD1TqK7V/hdpe+VNChhOzV8xWny/+xosHF8578W/Hmc1OOC3wmwAAAABJRU5ErkJggg==');
 }
 .chrome-bootstrap .overlay .page .action-area {
   -webkit-box-align: center;
@@ -571,19 +679,4 @@
 .chrome-bootstrap .overlay .page .button-strip button {
   -webkit-margin-start: 10px;
   display: block;
-}
-
-/* Custom Styles */
-.well {
-  float:left;
-  min-height: 20px;
-  width: 50%;
-  padding: 15px;
-  padding-top: 5px;
-  margin-bottom: 20px;
-  background-color: #f5f5f5;
-  border: 1px solid #e3e3e3;
-  border-radius: 4px;
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
-          box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.05);
 }
