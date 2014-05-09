@@ -1,12 +1,11 @@
 /* Custom Styles */
 body {
   margin: 20px;
+  width: 50%;
 }
 
 .well {
-  float:left;
   min-height: 20px;
-  width: 50%;
   padding: 15px;
   padding-top: 5px;
   margin-bottom: 20px;
@@ -20,4 +19,29 @@ body {
 .heading {
   color: #666;
   font-size: 26px;
+}
+
+.pull-right {
+  text-align: right;
+}
+
+.ng-hide { 
+  display:none!important; 
+}
+
+.cloud {
+  width: 180%;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 10px;
+}
+
+.tooltip {
+  padding: 5px;
+  font-size: 20px;
+  color: #666;
+  background-color: #e3e3e3;
+  width: 50px;
+  border-radius: 5px;
 }

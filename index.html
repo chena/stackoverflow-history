@@ -10,47 +10,44 @@
   <body ng-controller="PageController">
   	<div class="chrome-bootstrap">
   		<span class="heading">stack<strong>overflow</strong> history</span>
-      
-      <p style="margin-left: 350px; position:">
-        Search by Tag or Keyword: <input type="text" ng-model="keyword">
-        
-        <!--<input type="hidden" ng-model="tag">-->
-      </p>
 
-      <ul class="menu">
-        <li class="well" ng-repeat="question in toArray(questions) | orderBy:'time':true | filter:keyword">
-          <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
-          <p class="date">Last Visit: {{question.time | date : 'medium'}}</p>
-          <p>Tags: 
-            <button ng-repeat="tag in question.tags" ng-click="search(tag)">
-              {{tag}}
-            </button>
-          </p>
-        </li>
-      </ul>
-      <!--
-      <table class="table" ng-init="predicate='question.time'">
-        <thead>
-          <tr>
-            <th><a href="" ng-click="predicate='question.title'; reverse=!reverse">Question</a></th>
-            <th><a href="" ng-click="predicate='question.time'; reverse=!reverse">Last Visit</a></th>
-            <th><a href="" ng-click="predicate='question.tags'; reverse=!reverse">Tags</a></th>
-          </tr>
-        </thead>
-        <tr ng-repeat="question in questions | orderBy:predicate:reverse">
-          <td><a ng-href="{{question.url}}">{{question.title}}</a></td>
-          <td>{{question.time | date : 'medium'}}</td>
-          <td>
-            <ul class="tags">
-              <li ng-repeat="tag in question.tags"><button>{{tag}}</button></li>
-            </ul>
-          </td>
-        </tr>
-      </table>-->
+      <!-- selection menu -->
+      <div class="pull-right">
+        <select ng-model="view">
+          <option value="history">Browse History</option>
+          <option value="cloud">Visualize Tags</option>
+        </select>
+      </div>
+
+      <!-- history view -->
+      <div ng-show="view == 'history'">
+        <p class="pull-right">
+          Search by Tag or Keyword: <input type="text" ng-model="keyword">
+          <!--<input type="hidden" ng-model="tag">-->
+        </p>
+
+        <ul class="menu">
+          <li class="well" ng-repeat="question in toArray(questions) | orderBy:'time':true | filter:keyword">
+            <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
+            <p class="date">Last Visit: {{question.time | date : 'medium'}}</p>
+            <p>Tags: 
+              <button ng-repeat="tag in question.tags" ng-click="search(tag)">
+                {{tag}}
+              </button>
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- cloud view -->
+      <div class="cloud" ng-show="view == 'cloud'" ng-controller="WordCloudController">
+        <tagcloud></tagcloud>
+      </div>
   	</div>
 
     <script src="js/angular.min.js"></script>
     <script src='js/app.js'></script>
     <script src='js/constants.js'></script>
+    <script src="js/d3.min.js"></script>
   </body>
 </html>
