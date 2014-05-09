@@ -142,6 +142,6 @@ app.controller('WordCloudController', function($scope) {
 app.directive('tagcloud', function() {
 	return {
 		restrict: 'E', // restrict to element
-		templateUrl: '../tagcloud.html'
+		templateUrl: '../_tagcloud.html'
 	};
 });
