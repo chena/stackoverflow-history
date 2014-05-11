@@ -70,6 +70,7 @@ app.factory('HistoryService', function(StackExchangeService) {
 	return service;
 });
 
+// TODO: paginate
 app.controller('PageController', function($scope, HistoryService) {
 	$scope.view = 'history';
 
