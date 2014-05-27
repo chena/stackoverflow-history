@@ -19,18 +19,19 @@ app.factory('StackExchangeService', function($http, StackExchangeConst) {
 	return service;
 });
 
-app.factory('HistoryService', function(StackExchangeService) {
+app.factory('HistoryService', function($q, StackExchangeService) {
 	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	}
 
 	var service = {
-		search : function(callback) {
+		search : function() {
+			var deferred = $q.defer();
+
 			var microseconds = 1000 * 60 * 60 * 24 * 365;
 			var start = (new Date).getTime() - microseconds;
 			var questions = {}; // object the hold question URLs and their tags
 
-			// TODO: ng-click tags to show count
 			chrome.history.search({
 				'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
 				'startTime' : start,
@@ -58,12 +59,13 @@ app.factory('HistoryService', function(StackExchangeService) {
 						}
 					}
 
-					// ready to execute callback
 					if (i == historyItems.length - 1) {
-						callback(questions);
+						deferred.resolve(questions);
 					}
 				});
 			});
+			
+			return deferred.promise;
 		}
 	};
 
@@ -73,17 +75,11 @@ app.factory('HistoryService', function(StackExchangeService) {
 // TODO: paginate
 app.controller('PageController', function($scope, HistoryService) {
 	$scope.view = 'history';
+	$scope.questions = [];
 
-	HistoryService.search(function(questions) {
-		$scope.setQuestions(questions);
-	});
-
-	$scope.setQuestions = function(questions) {
-		// wrap in apply so angular knows when to bind our data when they become available
-		$scope.$apply(function() {
-			$scope.questions = questions;
-		});
-	}
+	HistoryService.search().then(function(questions) {
+		$scope.questions = questions;
+	})
 
 	$scope.toArray = function(map) {
 		var array = [];
