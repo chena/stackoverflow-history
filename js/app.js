@@ -26,6 +26,7 @@ app.factory('HistoryService', function($q, StackExchangeService) {
 
 	var service = {
 		search : function() {
+			// TODO: use native JavaScript Promise instead
 			var deferred = $q.defer();
 
 			var microseconds = 1000 * 60 * 60 * 24 * 365;
@@ -48,6 +49,7 @@ app.factory('HistoryService', function($q, StackExchangeService) {
 					if (match) {
 						var qid = match[1];
 						if (!questions[qid] && isNotEmpty(title) && isNotEmpty(url)) {
+							// TODO: making a API call to StackExchange for every history item is problematic
 							StackExchangeService.getQuestionTags(qid).then(function(tags) {
 								questions[qid] = {
 									title : title,
