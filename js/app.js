@@ -56,10 +56,9 @@ app.factory('HistoryService', function() {
 								}
 							}
 						}
-
-						resolve(questions);
 					});
 
+					resolve(questions);
 				});
 			});
 			
@@ -79,7 +78,7 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 		StackExchangeService.getQuestionsTags(questions).then(function(taggedQuestions) {
 			$scope.questions = taggedQuestions;
 		});
-	})
+	});
 
 	$scope.toArray = function(map) {
 		var array = [];
