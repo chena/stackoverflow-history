@@ -6,12 +6,14 @@ app.factory('StackExchangeService', function($http, StackExchangeConst) {
 	}
 
 	var service = {
-		getQuestionTags: function(qid) {
-			return $http.get(getRequestURL(qid)).then(function(result) {
-				var items = result.data.items;
-				if (items && items[0]) {
-					return items[0].tags;
-				}
+		getQuestionsTags: function(questions) {
+			var qids = Object.keys(questions).join(';');
+			return $http.get(getRequestURL(qids)).then(function(result) {
+				var taggedQuestions = result.data.items;
+				taggedQuestions.forEach(function(question) {
+					questions[question.question_id].tags = question.tags;
+				});
+				return questions;
 			});
 		}
 	};
@@ -19,55 +21,49 @@ app.factory('StackExchangeService', function($http, StackExchangeConst) {
 	return service;
 });
 
-app.factory('HistoryService', function($q, StackExchangeService) {
+app.factory('HistoryService', function() {
 	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	}
 
 	var service = {
 		search : function() {
-			// TODO: use native JavaScript Promise instead
-			var deferred = $q.defer();
-
 			var microseconds = 1000 * 60 * 60 * 24 * 365;
 			var start = (new Date).getTime() - microseconds;
 			var questions = {}; // object the hold question URLs and their tags
 
-			chrome.history.search({
-				'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
-				'startTime' : start,
-				'maxResults' : 30
-			}, function(historyItems) {
-				historyItems.forEach(function(item, i) {
-					var url = item.url, 
-						title = item.title,
-						time = item.lastVisitTime;
+			var promise = new Promise(function(resolve, reject) {
+				chrome.history.search({
+					'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
+					'startTime' : start,
+					'maxResults' : 30
+				}, function(historyItems) {
+					historyItems.forEach(function(item, i) {
+						var url = item.url, 
+							title = item.title,
+							time = item.lastVisitTime;
 
-					var match = url.match(/\/questions\/(\d+)\//i); // extract the questionID
-					
-					// only map unique questions that have a title and an URL
-					if (match) {
-						var qid = match[1];
-						if (!questions[qid] && isNotEmpty(title) && isNotEmpty(url)) {
-							// TODO: making a API call to StackExchange for every history item is problematic
-							StackExchangeService.getQuestionTags(qid).then(function(tags) {
+						var match = url.match(/\/questions\/(\d+)\//i); // extract the questionID
+						
+						// only map unique questions that have a title and an URL
+						if (match) {
+							var qid = match[1];
+							if (!questions[qid] && isNotEmpty(title) && isNotEmpty(url)) {
 								questions[qid] = {
 									title : title,
 									url : url,
-									tags : tags, 
 									time: time
 								}
-							});
+							}
 						}
-					}
 
-					if (i == historyItems.length - 1) {
-						deferred.resolve(questions);
-					}
+						resolve(questions);
+					});
+
 				});
 			});
 			
-			return deferred.promise;
+			return promise;
 		}
 	};
 
@@ -75,12 +71,14 @@ app.factory('HistoryService', function($q, StackExchangeService) {
 });
 
 // TODO: paginate
-app.controller('PageController', function($scope, HistoryService) {
+app.controller('PageController', function($scope, HistoryService, StackExchangeService) {
 	$scope.view = 'history';
 	$scope.questions = [];
 
 	HistoryService.search().then(function(questions) {
-		$scope.questions = questions;
+		StackExchangeService.getQuestionsTags(questions).then(function(taggedQuestions) {
+			$scope.questions = taggedQuestions;
+		});
 	})
 
 	$scope.toArray = function(map) {
