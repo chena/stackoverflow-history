@@ -3,7 +3,7 @@ var app = angular.module('StackoverflowHistory', []);
 app.factory('StackExchangeService', function($http, StackExchangeConst) {
 	var getRequestURL = function(qid) {
 		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
-	}
+	};
 
 	var service = {
 		getQuestionsTags: function(questions) {
@@ -24,13 +24,13 @@ app.factory('StackExchangeService', function($http, StackExchangeConst) {
 app.factory('HistoryService', function() {
 	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
-	}
+	};
 
 	var service = {
 		search : function() {
 			var microseconds = 1000 * 60 * 60 * 24 * 365;
-			var start = (new Date).getTime() - microseconds;
-			var questions = {}; // object the hold question URLs and their tags
+			var start = (new Date()).getTime() - microseconds;
+			var questions = {}; // object that hold question URLs and their tags
 
 			var promise = new Promise(function(resolve, reject) {
 				chrome.history.search({
@@ -53,7 +53,7 @@ app.factory('HistoryService', function() {
 									title : title,
 									url : url,
 									time: time
-								}
+								};
 							}
 						}
 					});
@@ -86,11 +86,11 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 			array.push(map[key]);
 		}
 		return array;
-	}
+	};
 
 	$scope.search = function(tag) {
 		$scope.keyword = tag;
-	}
+	};
 
 });
 
@@ -130,7 +130,7 @@ app.controller('WordCloudController', function($scope) {
 		if ($scope.view === 'cloud') {
 			$scope.setTagsData();
 		}
-	})
+	});
 	
 });
 
