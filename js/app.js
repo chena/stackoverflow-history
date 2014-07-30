@@ -96,7 +96,7 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 
 app.controller('WordCloudController', function($scope) {
 	$scope.setTagsData = function() {
-		var colors = d3.scale.category20();
+		//var colors = d3.scale.category20();
 		var tags = {};
 
 		$scope.toArray($scope.questions).forEach(function(question) {
@@ -109,6 +109,9 @@ app.controller('WordCloudController', function($scope) {
 			});
 		});
 
+		$scope.tags = tags;
+
+		/*
 		$scope.tags = Object.keys(tags).map(function(tag, i) {
 			var count = tags[tag],
 				size = 10 + tags[tag]/10 * 80 + 'px';
@@ -119,7 +122,7 @@ app.controller('WordCloudController', function($scope) {
 				size: size, 
 				color: colors(i)
 			};
-		});
+		});*/
 	};
 
 	$scope.showCount = function(tag) {
@@ -135,9 +138,65 @@ app.controller('WordCloudController', function($scope) {
 });
 
 // word cloud directive for our tags
-app.directive('tagcloud', function() {
+app.directive('wordcloud', function() {
 	return {
 		restrict: 'E', // restrict to element
-		templateUrl: '../_tagcloud.html'
+		//templateUrl: '../_wordcloud.html',
+		link: function postlink(scope, element, attrs) {
+			
+			/*
+				scope is an Angular scope object.
+				element is the jqLite-wrapped element that this directive matches.
+				attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
+			*/
+			var makeCloud = function(wordCount) {
+				var fill = d3.scale.category20();
+
+				d3.layout.cloud().size([300, 300])
+					.words(Object.keys(wordCount).map(function(word) {
+						return {text: word, size: 10 + wordCount[word]/10 * 80};
+					}))
+					.padding(5)
+					.rotate(0)
+					.fontSize(function(d) { return d.size; })
+					.on('end', draw)
+					.start();  
+
+				function draw(words) {
+					d3.select('body').append("svg")
+							.attr('width', 300)
+							.attr('height', 300)
+						.append('g')
+							.attr('transform', 'translate(150,150)')
+						.selectAll('text').data(words)
+						.enter()
+						.append('text')
+							.style('font-size', function(d) {
+								return d.size + "px"; 
+							})
+							.style('font-family', 'Lucida Grande')
+							.style('fill', function(d, i) {
+								return fill(i); 
+							})
+						.attr('text-anchor', 'middle')
+				        .attr('transform', function(d) {
+				        	return 'translate(' + [d.x, d.y] + ')rotate(' + d.rotate + ')';
+				        })
+				        .text(function(d) {
+				          return d.text; 
+				        })
+				        .style('cursor', 'pointer')
+				        .on('click', function(d) {
+				        	alert(d.text);
+				        });
+				}
+			}
+
+			scope.$watch('view', function() {
+				if (scope.view === 'cloud') {
+					makeCloud(scope.tags);
+				}
+			});
+		}
 	};
 });
