@@ -132,15 +132,14 @@ app.controller('WordCloudController', function($scope) {
 app.directive('wordcloud', function() {
 	return {
 		restrict: 'E', // restrict to element
-		//templateUrl: '../_wordcloud.html',
 		scope: {
 			tags: '=words' // put tags into the directive's scope, specified by attribute name 'words'
 		},
-		link: function postlink(scope, element, attrs) {
-			// reatea a reference for the container for the cloud
+		link: function (scope, element, attrs) {
+			// create a reference for the container for the cloud
 			var svg = d3.select(element[0]).append('svg');
 
-			scope.draw = function(data) {
+			scope.render = function(data) {
 				// remove everything before drawing the cloud
 				svg.selectAll('*').remove();
 
@@ -199,7 +198,7 @@ app.directive('wordcloud', function() {
 			};
 
 			scope.$watch(attrs.words, function() {
-				scope.draw(scope.tags);
+				scope.render(scope.tags);
 			});
 		}
 	};
