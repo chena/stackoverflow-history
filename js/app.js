@@ -137,14 +137,15 @@ app.directive('wordcloud', function() {
 			tags: '=words' // put tags into the directive's scope, specified by attribute name 'words'
 		},
 		link: function postlink(scope, element, attrs) {
-			var makeCloud = function() {
-				var wordCount = scope.tags;
-				if (!wordCount) return;
+			// reatea a reference for the container for the cloud
+			var svg = d3.select(element[0]).append('svg');
 
-				// first remove the existing cloud
-				console.log(element);
-				console.log(attrs);
-				element.remove();
+			scope.draw = function(data) {
+				// remove everything before drawing the cloud
+				svg.selectAll('*').remove();
+
+				var wordCount = data;
+				if (!wordCount) return;
 				
 				var fill = d3.scale.category20();
 
@@ -163,9 +164,8 @@ app.directive('wordcloud', function() {
 					.start();  
 
 				function draw(words) {
-					d3.select('body').append('svg')
-							.attr('width', 300)
-							.attr('height', 300)
+					svg.attr('width', 300)
+						.attr('height', 300)
 						.append('g')
 							.attr('transform', 'translate(150,150)')
 						.selectAll('text').data(words)
@@ -196,10 +196,10 @@ app.directive('wordcloud', function() {
 				        		.append('<span class="tooltip">count: ' + d.count + '</span>');
 				        });
 				}
-			}
+			};
 
 			scope.$watch(attrs.words, function() {
-				makeCloud();
+				scope.draw(scope.tags);
 			});
 		}
 	};
