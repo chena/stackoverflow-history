@@ -1,27 +1,29 @@
 var app = angular.module('StackoverflowHistory', []);
 
-app.factory('StackExchangeService', function($http, StackExchangeConst) {
+app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 	var getRequestURL = function(qid) {
 		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
 	};
 
 	var service = {
 		getQuestionsTags: function(questions) {
+			var deferred = $q.defer();
 			var qids = Object.keys(questions).join(';');
-			return $http.get(getRequestURL(qids)).then(function(result) {
-				var taggedQuestions = result.data.items;
-				taggedQuestions.forEach(function(question) {
+			
+			$http.get(getRequestURL(qids)).then(function(result) {
+				result.data.items.forEach(function(question) {
 					questions[question.question_id].tags = question.tags;
 				});
-				return questions;
+				deferred.resolve(questions);
 			});
+			return deferred.promise;
 		}
 	};
 
 	return service;
 });
 
-app.factory('HistoryService', function() {
+app.factory('HistoryService', function($q) {
 	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	};
@@ -31,38 +33,37 @@ app.factory('HistoryService', function() {
 			var microseconds = 1000 * 60 * 60 * 24 * 365;
 			var start = (new Date()).getTime() - microseconds;
 			var questions = {}; // object that hold question URLs and their tags
+			var deferred = $q.defer();
+			
+			chrome.history.search({
+				'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
+				'startTime' : start,
+				'maxResults' : 30
+			}, function(historyItems) {
+				historyItems.forEach(function(item, i) {
+					var url = item.url, 
+						title = item.title,
+						time = item.lastVisitTime;
 
-			var promise = new Promise(function(resolve, reject) {
-				chrome.history.search({
-					'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
-					'startTime' : start,
-					'maxResults' : 30
-				}, function(historyItems) {
-					historyItems.forEach(function(item, i) {
-						var url = item.url, 
-							title = item.title,
-							time = item.lastVisitTime;
-
-						var match = url.match(/\/questions\/(\d+)\//i); // extract the questionID
-						
-						// only map unique questions that have a title and an URL
-						if (match) {
-							var qid = match[1];
-							if (!questions[qid] && isNotEmpty(title) && isNotEmpty(url)) {
-								questions[qid] = {
-									title : title,
-									url : url,
-									time: time
-								};
-							}
+					var match = url.match(/\/questions\/(\d+)\//i); // extract the questionID
+					
+					// only map unique questions that have a title and an URL
+					if (match) {
+						var qid = match[1];
+						if (!questions[qid] && isNotEmpty(title) && isNotEmpty(url)) {
+							questions[qid] = {
+								title : title,
+								url : url,
+								time: time
+							};
 						}
-					});
-
-					resolve(questions);
+					}
 				});
+
+				deferred.resolve(questions);
 			});
 			
-			return promise;
+			return deferred.promise;
 		}
 	};
 
@@ -72,13 +73,16 @@ app.factory('HistoryService', function() {
 // TODO: paginate
 app.controller('PageController', function($scope, HistoryService, StackExchangeService) {
 	$scope.view = 'history';
-	$scope.questions = [];
+	$scope.questions = {};
 
-	HistoryService.search().then(function(questions) {
-		StackExchangeService.getQuestionsTags(questions).then(function(taggedQuestions) {
-			$scope.questions = taggedQuestions;
+	HistoryService.search()
+		.then(function(questions) {
+			// getQuestionsTags returns a promise
+			return StackExchangeService.getQuestionsTags(questions);
+		})
+		.then(function(taggedQuestions) {
+ 			$scope.questions = taggedQuestions;
 		});
-	});
 
 	$scope.toArray = function(map) {
 		var array = [];
@@ -96,7 +100,6 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 
 app.controller('WordCloudController', function($scope) {
 	$scope.setTagsData = function() {
-		//var colors = d3.scale.category20();
 		var tags = {};
 
 		$scope.toArray($scope.questions).forEach(function(question) {
@@ -110,19 +113,6 @@ app.controller('WordCloudController', function($scope) {
 		});
 
 		$scope.tags = tags;
-
-		/*
-		$scope.tags = Object.keys(tags).map(function(tag, i) {
-			var count = tags[tag],
-				size = 10 + tags[tag]/10 * 80 + 'px';
-
-			return {
-				text: tag,
-				count: count, 
-				size: size, 
-				color: colors(i)
-			};
-		});*/
 	};
 
 	$scope.showCount = function(tag) {
@@ -138,23 +128,22 @@ app.controller('WordCloudController', function($scope) {
 });
 
 // word cloud directive for our tags
+// TODO: pass in D3 dependency here?
 app.directive('wordcloud', function() {
 	return {
 		restrict: 'E', // restrict to element
 		//templateUrl: '../_wordcloud.html',
 		link: function postlink(scope, element, attrs) {
-			
-			/*
-				scope is an Angular scope object.
-				element is the jqLite-wrapped element that this directive matches.
-				attrs is a hash object with key-value pairs of normalized attribute names and their corresponding attribute values.
-			*/
 			var makeCloud = function(wordCount) {
 				var fill = d3.scale.category20();
 
 				d3.layout.cloud().size([300, 300])
 					.words(Object.keys(wordCount).map(function(word) {
-						return {text: word, size: 10 + wordCount[word]/10 * 80};
+						return {
+							text: word, 
+							count: wordCount[word],
+							size: 10 + wordCount[word]/10 * 80
+						};
 					}))
 					.padding(5)
 					.rotate(0)
@@ -187,11 +176,18 @@ app.directive('wordcloud', function() {
 				        })
 				        .style('cursor', 'pointer')
 				        .on('click', function(d) {
-				        	alert(d.text);
+				        	console.log(d.count);
+				        	/*this.append($('<span>', {
+				        		text: 'count: ' + d.count,
+				        		'class': 'tooltip'
+				        	}));*/
+				        	angular.element(this)
+				        		.append('<span class="tooltip">count: ' + d.count + '</span>');
 				        });
 				}
 			}
 
+			// FIXME: the cloud is redrawn every time
 			scope.$watch('view', function() {
 				if (scope.view === 'cloud') {
 					makeCloud(scope.tags);
