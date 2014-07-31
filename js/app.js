@@ -9,7 +9,7 @@ app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 		getQuestionsTags: function(questions) {
 			var deferred = $q.defer();
 			var qids = Object.keys(questions).join(';');
-			
+
 			$http.get(getRequestURL(qids)).then(function(result) {
 				result.data.items.forEach(function(question) {
 					questions[question.question_id].tags = question.tags;
@@ -133,8 +133,19 @@ app.directive('wordcloud', function() {
 	return {
 		restrict: 'E', // restrict to element
 		//templateUrl: '../_wordcloud.html',
+		scope: {
+			tags: '=words' // put tags into the directive's scope, specified by attribute name 'words'
+		},
 		link: function postlink(scope, element, attrs) {
-			var makeCloud = function(wordCount) {
+			var makeCloud = function() {
+				var wordCount = scope.tags;
+				if (!wordCount) return;
+
+				// first remove the existing cloud
+				console.log(element);
+				console.log(attrs);
+				element.remove();
+				
 				var fill = d3.scale.category20();
 
 				d3.layout.cloud().size([300, 300])
@@ -152,7 +163,7 @@ app.directive('wordcloud', function() {
 					.start();  
 
 				function draw(words) {
-					d3.select('body').append("svg")
+					d3.select('body').append('svg')
 							.attr('width', 300)
 							.attr('height', 300)
 						.append('g')
@@ -161,7 +172,7 @@ app.directive('wordcloud', function() {
 						.enter()
 						.append('text')
 							.style('font-size', function(d) {
-								return d.size + "px"; 
+								return d.size + 'px'; 
 							})
 							.style('font-family', 'Lucida Grande')
 							.style('fill', function(d, i) {
@@ -187,11 +198,8 @@ app.directive('wordcloud', function() {
 				}
 			}
 
-			// FIXME: the cloud is redrawn every time
-			scope.$watch('view', function() {
-				if (scope.view === 'cloud') {
-					makeCloud(scope.tags);
-				}
+			scope.$watch(attrs.words, function() {
+				makeCloud();
 			});
 		}
 	};
