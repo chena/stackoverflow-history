@@ -141,14 +141,21 @@ app.directive('wordcloud', function() {
 
 			scope.render = function(data) {
 				// remove everything before drawing the cloud
+				// otherwise it will try to draw on top of the existing cloud
 				svg.selectAll('*').remove();
+
+				// create an HTML element for tooltip to be appended inside our svg element
+				// because we cannot directly append HTML element inside svg
+				var tooltip = svg.append("foreignObject")
+								.attr("width", 400)
+								.attr("height", 400);
 
 				var wordCount = data;
 				if (!wordCount) return;
 				
 				var fill = d3.scale.category20();
 
-				d3.layout.cloud().size([300, 300])
+				d3.layout.cloud().size([400, 400])
 					.words(Object.keys(wordCount).map(function(word) {
 						return {
 							text: word, 
@@ -163,10 +170,10 @@ app.directive('wordcloud', function() {
 					.start();  
 
 				function draw(words) {
-					svg.attr('width', 300)
-						.attr('height', 300)
+					svg.attr('width', 400)
+						.attr('height', 400)
 						.append('g')
-							.attr('transform', 'translate(150,150)')
+							.attr('transform', 'translate(200,200)')
 						.selectAll('text').data(words)
 						.enter()
 						.append('text')
@@ -185,14 +192,14 @@ app.directive('wordcloud', function() {
 				          return d.text; 
 				        })
 				        .style('cursor', 'pointer')
-				        .on('click', function(d) {
-				        	console.log(d.count);
-				        	/*this.append($('<span>', {
-				        		text: 'count: ' + d.count,
-				        		'class': 'tooltip'
-				        	}));*/
-				        	angular.element(this)
-				        		.append('<span class="tooltip">count: ' + d.count + '</span>');
+				        .on('mouseover', function(d) {
+				        	// first remove existing tooltips
+				        	console.log(d);
+				        	tooltip.selectAll('*').remove();
+				        	tooltip.append("xhtml:body")
+                                .html("<span style='position:absolute; " + 
+                                	"transform:translate("+ (d.x + 200 + d.width) + "px," + (d.y + 200 + d.height) +"px);'" +
+                                	"class='tooltip'>count: " + d.count + "</span>");
 				        });
 				}
 			};
