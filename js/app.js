@@ -6,6 +6,7 @@ app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 	};
 
 	var service = {
+		// return a promise with tagged questions
 		getQuestionsTags: function(questions) {
 			var deferred = $q.defer();
 			var qids = Object.keys(questions).join(';');
@@ -29,11 +30,13 @@ app.factory('HistoryService', function($q) {
 	};
 
 	var service = {
+		// return a promise with SO questions from history
 		search : function() {
-			var microseconds = 1000 * 60 * 60 * 24 * 365;
+			var microseconds = 1000 * 60 * 60 * 24 * 30; // a month in microseconds
 			var start = (new Date()).getTime() - microseconds;
-			var questions = {}; // object that hold question URLs and their tags
-			var deferred = $q.defer();
+
+			var questions = {}; // object that hold question URLs and visited time
+			var deferred = $q.defer(); 
 			
 			chrome.history.search({
 				'text' : 'stackoverflow.com/questions', // look for visits from stackoverflow
@@ -115,10 +118,6 @@ app.controller('WordCloudController', function($scope) {
 		$scope.tags = tags;
 	};
 
-	$scope.showCount = function(tag) {
-		console.log(tag.count);
-	};
-
 	$scope.$watch('view', function() {
 		if ($scope.view === 'cloud') {
 			$scope.setTagsData();
@@ -144,11 +143,9 @@ app.directive('wordcloud', function() {
 				// otherwise it will try to draw on top of the existing cloud
 				svg.selectAll('*').remove();
 
-				// create an HTML element for tooltip to be appended inside our svg element
-				// because we cannot directly append HTML element inside svg
-				var tooltip = svg.append("foreignObject")
-								.attr("width", 400)
-								.attr("height", 400);
+				// create a forign object for tooltip to be appended inside our svg element
+				// because we cannot directly append HTML element inside an svg
+				var tooltip = svg.append("foreignObject");
 
 				var wordCount = data;
 				if (!wordCount) return;
@@ -198,12 +195,14 @@ app.directive('wordcloud', function() {
 				        	tooltip.selectAll('*').remove();
 				        	tooltip.append("xhtml:body")
                                 .html("<span style='position:absolute; " + 
-                                	"transform:translate("+ (d.x + 200 + d.width) + "px," + (d.y + 200 + d.height) +"px);'" +
+                                	"transform:translate("+ (d.x + d.width + 100) + "px," + (d.y + d.height + 200) +"px);'" +
                                 	"class='tooltip'>count: " + d.count + "</span>");
 				        });
 				}
 			};
 
+			// watch for values of words attribute attached to the directive
+			// and call render
 			scope.$watch(attrs.words, function() {
 				scope.render(scope.tags);
 			});
