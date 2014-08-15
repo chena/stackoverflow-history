@@ -5,7 +5,7 @@ Chrome extension that extracts page visits to Stackoverflow and analyzes those r
 * [AngularJS](https://angularjs.org/) for the single page app.
 * [Chrome History API](https://developer.chrome.com/extensions/history) to access brower history.
 * [Stack Exchange API](http://api.stackexchange.com/docs) to extract page data for analysis, such as Stackoverflow question tags. 
-* [D3](http://d3js.org/) for some data visualization.
+* [D3](http://d3js.org/) for the data visualization, using the cloud layout.
 
 ## Usage
 
@@ -14,9 +14,8 @@ Chrome extension that extracts page visits to Stackoverflow and analyzes those r
 3. Click on the Stackoverflow icon in the top right corner of the browser window
 
 ## Demo
-
-`TODO: show some screenshots`
-
+![history](https://raw.githubusercontent.com/chena/stackoverflow-history/master/history.png)
+![cloud](https://raw.githubusercontent.com/chena/stackoverflow-history/master/cloud.png)
 
 
 
