@@ -143,7 +143,7 @@ app.directive('wordcloud', function() {
 				// otherwise it will try to draw on top of the existing cloud
 				svg.selectAll('*').remove();
 
-				// create a forign object for tooltip to be appended inside our svg element
+				// create a foreign object for tooltip to be appended inside our svg element
 				// because we cannot directly append HTML element inside an svg
 				var tooltip = svg.append("foreignObject");
 
@@ -164,7 +164,7 @@ app.directive('wordcloud', function() {
 					.rotate(0)
 					.fontSize(function(d) { return d.size; })
 					.on('end', draw)
-					.start();  
+					.start(); 
 
 				function draw(words) {
 					svg.attr('width', 400)
@@ -191,7 +191,6 @@ app.directive('wordcloud', function() {
 				        .style('cursor', 'pointer')
 				        .on('mouseover', function(d) {
 				        	// first remove existing tooltips
-				        	console.log(d);
 				        	tooltip.selectAll('*').remove();
 				        	tooltip.append("xhtml:body")
                                 .html("<span style='position:absolute; " + 
