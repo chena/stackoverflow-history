@@ -5,23 +5,27 @@ app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
 	};
 
-	var service = {
+	return {
 		// return a promise with tagged questions
 		getQuestionsTags: function(questions) {
 			var deferred = $q.defer();
 			var qids = Object.keys(questions).join(';');
 
-			$http.get(getRequestURL(qids)).then(function(result) {
-				result.data.items.forEach(function(question) {
-					questions[question.question_id].tags = question.tags;
+			$http.get(getRequestURL(qids))
+				.then(function(result) {
+					result.data.items.forEach(function(question) {
+						questions[question.question_id].tags = question.tags;
+					});
+					deferred.resolve(questions);
+				})
+				.catch(function(response){
+					deferred.reject(response);
 				});
-				deferred.resolve(questions);
-			});
+
 			return deferred.promise;
 		}
 	};
 
-	return service;
 });
 
 app.factory('HistoryService', function($q) {
@@ -29,7 +33,7 @@ app.factory('HistoryService', function($q) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	};
 
-	var service = {
+	return {
 		// return a promise with SO questions from history
 		search : function() {
 			var microseconds = 1000 * 60 * 60 * 24 * 30; // a month in microseconds
@@ -69,8 +73,6 @@ app.factory('HistoryService', function($q) {
 			return deferred.promise;
 		}
 	};
-
-	return service;
 });
 
 // TODO: paginate
@@ -78,22 +80,22 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 	$scope.view = 'history';
 	$scope.questions = {};
 
-	HistoryService.search()
-		.then(function(questions) {
-			// getQuestionsTags returns a promise
-			return StackExchangeService.getQuestionsTags(questions);
-		})
-		.then(function(taggedQuestions) {
- 			$scope.questions = taggedQuestions;
-		});
-
-	$scope.toArray = function(map) {
+	var toArray = function(map) {
 		var array = [];
 		for (var key in map) {
 			array.push(map[key]);
 		}
 		return array;
 	};
+
+	HistoryService.search()
+		.then(function(questions) {
+			// getQuestionsTags returns a promise
+			return StackExchangeService.getQuestionsTags(questions);
+		})
+		.then(function(taggedQuestions) {
+ 			$scope.questions = toArray(taggedQuestions);
+		});
 
 	$scope.search = function(tag) {
 		$scope.keyword = tag;
@@ -105,7 +107,7 @@ app.controller('WordCloudController', function($scope) {
 	$scope.setTagsData = function() {
 		var tags = {};
 
-		$scope.toArray($scope.questions).forEach(function(question) {
+		$scope.questions.forEach(function(question) {
 			question.tags.forEach(function(tag) {
 				if (tags[tag]) {
 					tags[tag] += 1;
@@ -113,7 +115,7 @@ app.controller('WordCloudController', function($scope) {
 					tags[tag] = 1;
 				}
 			});
-		});
+		})
 
 		$scope.tags = tags;
 	};
@@ -128,7 +130,7 @@ app.controller('WordCloudController', function($scope) {
 
 // word cloud directive for our tags
 // TODO: pass in D3 dependency here?
-app.directive('wordcloud', function() {
+app.directive('wordCloud', function() {
 	return {
 		restrict: 'E', // restrict to element
 		scope: {
@@ -164,7 +166,7 @@ app.directive('wordcloud', function() {
 					.rotate(0)
 					.fontSize(function(d) { return d.size; })
 					.on('end', draw)
-					.start(); 
+					.start();  
 
 				function draw(words) {
 					svg.attr('width', 400)

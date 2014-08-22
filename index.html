@@ -27,7 +27,7 @@
         </p>
 
         <ul class="menu">
-          <li class="well" ng-repeat="question in toArray(questions) | orderBy:'time':true | filter:keyword">
+          <li class="well" ng-repeat="question in questions | orderBy:'time':true | filter:keyword">
             <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
             <p class="date">Last Visit: {{question.time | date : 'medium'}}</p>
             <p>Tags: 
@@ -41,7 +41,7 @@
 
       <!-- cloud view -->
       <div ng-show="view == 'cloud'" ng-controller="WordCloudController">
-        <wordcloud words="tags"></wordcloud>
+        <word-cloud words="tags"></word-cloud>
       </div>
   	</div>
 
