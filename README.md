@@ -3,7 +3,7 @@
 Chrome extension that extracts page visits to Stackoverflow and analyzes those results. It uses the following technologies: 
 
 * [AngularJS](https://angularjs.org/) for the single page app.
-* [Chrome History API](https://developer.chrome.com/extensions/history) to access brower history.
+* [Chrome History API](https://developer.chrome.com/extensions/history) to access browser history.
 * [Stack Exchange API](http://api.stackexchange.com/docs) to extract page data for analysis, such as Stackoverflow question tags. 
 * [D3](http://d3js.org/) for the data visualization, using the cloud layout.
 
