@@ -1,9 +1,15 @@
-var app = angular.module('StackoverflowHistory', []);
+'use strict';
 
-app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
-	var getRequestURL = function(qid) {
-		return StackExchangeConst.baseURL + qid + '?site=stackoverflow&key=' + StackExchangeConst.key;
-	};
+angular
+	.module('StackoverflowHistory', [])
+	.factory('StackExchangeService', stackExchangeService)
+	.factory('HistoryService', historyService)
+	.controller('PageController', pageController)
+	.controller('WordCloudController', wordCloudController)
+	.directive('wordCloud', wordCloud);
+
+function stackExchangeService($http, $q) {
+	var baseURL = 'http://api.stackexchange.com/2.2/questions/';
 
 	return {
 		// return a promise with tagged questions
@@ -11,8 +17,11 @@ app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 			var deferred = $q.defer();
 			var qids = Object.keys(questions).join(';');
 
-			$http.get(getRequestURL(qids))
-				.then(function(result) {
+			$http.get('key.json').then(function(resp) {
+					return baseURL + qids + '?site=stackoverflow&key=' + resp.data.key;
+				}).then(function(requestURL) {
+					return $http.get(requestURL);
+				}).then(function(result) {
 					result.data.items.forEach(function(question) {
 						questions[question.question_id].tags = question.tags;
 					});
@@ -25,10 +34,9 @@ app.factory('StackExchangeService', function($http, $q, StackExchangeConst) {
 			return deferred.promise;
 		}
 	};
+}
 
-});
-
-app.factory('HistoryService', function($q) {
+function historyService($q) {
 	var isNotEmpty = function(str) {
 		return (typeof str !== 'undefined') && (str.length > 0);
 	};
@@ -73,10 +81,10 @@ app.factory('HistoryService', function($q) {
 			return deferred.promise;
 		}
 	};
-});
+}
 
 // TODO: paginate
-app.controller('PageController', function($scope, HistoryService, StackExchangeService) {
+function pageController($scope, HistoryService, StackExchangeService) {
 	$scope.view = 'history';
 	$scope.questions = {};
 
@@ -101,9 +109,9 @@ app.controller('PageController', function($scope, HistoryService, StackExchangeS
 		$scope.keyword = tag;
 	};
 
-});
+}
 
-app.controller('WordCloudController', function($scope) {
+function wordCloudController($scope) {
 	$scope.setTagsData = function() {
 		var tags = {};
 
@@ -126,11 +134,11 @@ app.controller('WordCloudController', function($scope) {
 		}
 	});
 	
-});
+}
 
 // word cloud directive for our tags
 // TODO: pass in D3 dependency here?
-app.directive('wordCloud', function() {
+function wordCloud() {
 	return {
 		restrict: 'E', // restrict to element
 		scope: {
@@ -209,4 +217,4 @@ app.directive('wordCloud', function() {
 			});
 		}
 	};
-});
+}
