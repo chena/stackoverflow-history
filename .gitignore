@@ -1,4 +1,4 @@
 *.DS_Store
 js/constants.js
-js/key.json
+key.json
 wordcloud*.html
