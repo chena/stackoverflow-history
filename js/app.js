@@ -137,7 +137,7 @@ function wordCloudController($scope) {
 }
 
 // word cloud directive for our tags
-// TODO: pass in D3 dependency here?
+// TODO: generate workd cloud based on a date range
 function wordCloud() {
 	return {
 		restrict: 'E', // restrict to element
