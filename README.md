@@ -13,7 +13,7 @@ Chrome extension that extracts page visits to Stackoverflow and analyzes those r
 3. Go to your Chrome's extensions page in your browser `chrome://extensions/`
 4. Drag and drop the project directory `stackoverflow-history` into the page; or alternatively, click on "Load unpack extension..." to add it.
 5. Make sure that you have the correct information on your regiestered app from Step 1, then reload the extension.
-6. Click on the Stackoverflow icon in the top right corner of the browser window
+6. Click on the Stackoverflow icon in the top right corner of the browser window, which should open up a new tab.
 
 ## Demo
 ![history](https://raw.githubusercontent.com/chena/stackoverflow-history/master/history.png)
