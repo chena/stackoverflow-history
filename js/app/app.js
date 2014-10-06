@@ -83,10 +83,11 @@ function historyService($q) {
 	};
 }
 
-// TODO: paginate
 function pageController($scope, HistoryService, StackExchangeService) {
 	$scope.view = 'history';
 	$scope.questions = {};
+	$scope.currentPage = 0;
+	$scope.pageLimit = 10;
 
 	var toArray = function(map) {
 		var array = [];

@@ -27,7 +27,9 @@
         </p>
 
         <ul class="menu">
-          <li class="well" ng-repeat="question in questions | orderBy:'time':true | filter:keyword">
+          <li class="well" ng-repeat="question in questions 
+            | orderBy:'time':true 
+            | filter:keyword ">
             <h3><a ng-href="{{question.url}}">{{question.title}}</a></h3>
             <p class="date">Last Visit: {{question.time | date : 'medium'}}</p>
             <p>Tags: 
@@ -45,9 +47,9 @@
       </div>
   	</div>
 
-    <script src="js/angular.min.js"></script>
-    <script src='js/app.js'></script>
-    <script src="js/d3.min.js"></script>
-    <script src="js/d3.layout.cloud.js"></script>
+    <script src="js/vendor/angular.min.js"></script>
+    <script src='js/app/app.js'></script>
+    <script src="js/vendor/d3.min.js"></script>
+    <script src="js/vendor/d3.layout.cloud.js"></script>
   </body>
 </html>
